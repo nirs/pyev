@@ -32,7 +32,7 @@ libev is written and maintained by Marc Lehmann.
 
 Useful links:
 
-- `Latest release <https://pypi.python.org/pypi/pyev/>`_
+- `Latest release <http://pypi.python.org/pypi/pyev/>`_
 - `Documentation <http://pythonhosted.org/pyev/>`_
 - `Bug reports and feature requests <http://code.google.com/p/pyev/issues/list>`_
 - `pyev's source code <http://code.google.com/p/pyev/>`_ is currently hosted by

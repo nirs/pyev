@@ -62,8 +62,8 @@ PYEV_VERSION = "\"{0}\"".format(pyev_version)
 setup(
       name="pyev",
       version=pyev_version,
-      url="http://code.google.com/p/pyev/",
-      download_url="http://code.google.com/p/pyev/downloads/list",
+      url="http://pythonhosted.org/pyev/",
+      download_url="http://pypi.python.org/pypi/pyev/",
       description="Python libev interface.",
       long_description=open(abspath("README.txt"), "r").read(),
       author="Malek Hadj-Ali",
