@@ -281,7 +281,6 @@ Watcher_tp_clear(Watcher *self)
 static void
 Watcher_tp_dealloc(Watcher *self)
 {
-    printf("Watcher_tp_dealloc\n");
     Watcher_tp_clear(self);
     if (self->watcher) {
         if (self->loop) {
@@ -291,7 +290,6 @@ Watcher_tp_dealloc(Watcher *self)
         self->watcher = NULL;
     }
     Py_TYPE(self)->tp_free((PyObject *)self);
-    printf("Watcher_tp_dealloc done\n");
 }
 
 
@@ -319,17 +317,6 @@ Watcher_stop(Watcher *self)
 }
 
 
-/* Watcher.clear() -> int */
-PyDoc_STRVAR(Watcher_clear_doc,
-"clear() -> int");
-
-static PyObject *
-Watcher_clear(Watcher *self)
-{
-    return PyInt_FromLong(ev_clear_pending(self->loop->loop, self->watcher));
-}
-
-
 /* Watcher.invoke(revents) */
 PyDoc_STRVAR(Watcher_invoke_doc,
 "invoke(revents)");
@@ -344,6 +331,17 @@ Watcher_invoke(Watcher *self, PyObject *args)
     }
     ev_invoke(self->loop->loop, self->watcher, revents);
     Py_RETURN_NONE;
+}
+
+
+/* Watcher.clear() -> int */
+PyDoc_STRVAR(Watcher_clear_doc,
+"clear() -> int");
+
+static PyObject *
+Watcher_clear(Watcher *self)
+{
+    return PyInt_FromLong(ev_clear_pending(self->loop->loop, self->watcher));
 }
 
 
@@ -370,10 +368,10 @@ static PyMethodDef Watcher_tp_methods[] = {
      METH_NOARGS, Watcher_start_doc},
     {"stop", (PyCFunction)Watcher_stop,
      METH_NOARGS, Watcher_stop_doc},
-    {"clear", (PyCFunction)Watcher_clear,
-     METH_NOARGS, Watcher_clear_doc},
     {"invoke", (PyCFunction)Watcher_invoke,
      METH_VARARGS, Watcher_invoke_doc},
+    {"clear", (PyCFunction)Watcher_clear,
+     METH_NOARGS, Watcher_clear_doc},
     {"feed", (PyCFunction)Watcher_feed,
      METH_VARARGS, Watcher_feed_doc},
     {NULL}  /* Sentinel */
@@ -382,26 +380,10 @@ static PyMethodDef Watcher_tp_methods[] = {
 
 /* WatcherType.tp_members */
 static PyMemberDef Watcher_tp_members[] = {
-    {"loop", T_OBJECT_EX, offsetof(Watcher, loop), READONLY, NULL},
     {"data", T_OBJECT, offsetof(Watcher, data), 0, NULL},
+    {"loop", T_OBJECT_EX, offsetof(Watcher, loop), READONLY, NULL},
     {NULL}  /* Sentinel */
 };
-
-
-/* Watcher.active */
-static PyObject *
-Watcher_active_get(Watcher *self, void *closure)
-{
-    return PyBool_FromLong(ev_is_active(self->watcher));
-}
-
-
-/* Watcher.pending */
-static PyObject *
-Watcher_pending_get(Watcher *self, void *closure)
-{
-    return PyBool_FromLong(ev_is_pending(self->watcher));
-}
 
 
 /* Watcher.callback */
@@ -438,16 +420,32 @@ Watcher_priority_set(Watcher *self, PyObject *value, void *closure)
 }
 
 
+/* Watcher.active */
+static PyObject *
+Watcher_active_get(Watcher *self, void *closure)
+{
+    return PyBool_FromLong(ev_is_active(self->watcher));
+}
+
+
+/* Watcher.pending */
+static PyObject *
+Watcher_pending_get(Watcher *self, void *closure)
+{
+    return PyBool_FromLong(ev_is_pending(self->watcher));
+}
+
+
 /* WatcherType.tp_getsets */
 static PyGetSetDef Watcher_tp_getsets[] = {
-    {"active", (getter)Watcher_active_get,
-     Readonly_attribute_set, NULL, NULL},
-    {"pending", (getter)Watcher_pending_get,
-     Readonly_attribute_set, NULL, NULL},
     {"callback", (getter)Watcher_callback_get,
      (setter)Watcher_callback_set, NULL, NULL},
     {"priority", (getter)Watcher_priority_get,
      (setter)Watcher_priority_set, NULL, NULL},
+    {"active", (getter)Watcher_active_get,
+     Readonly_attribute_set, NULL, NULL},
+    {"pending", (getter)Watcher_pending_get,
+     Readonly_attribute_set, NULL, NULL},
     {NULL}  /* Sentinel */
 };
 

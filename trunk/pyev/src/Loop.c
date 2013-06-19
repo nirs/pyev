@@ -176,7 +176,6 @@ Loop_tp_clear(Loop *self)
 static void
 Loop_tp_dealloc(Loop *self)
 {
-    printf("Loop_tp_dealloc\n");
     Loop_tp_clear(self);
     if (self->loop) {
         PYEV_LOOP_EXIT(self->loop);
@@ -187,7 +186,55 @@ Loop_tp_dealloc(Loop *self)
         self->loop = NULL;
     }
     Py_TYPE(self)->tp_free((PyObject *)self);
-    printf("Loop_tp_dealloc done\n");
+}
+
+
+/* Loop.start([flags]) -> bool */
+PyDoc_STRVAR(Loop_start_doc,
+"start([flags]) -> bool");
+
+static PyObject *
+Loop_start(Loop *self, PyObject *args)
+{
+    int flags = 0;
+
+    if (!PyArg_ParseTuple(args, "|i:start", &flags)) {
+        return NULL;
+    }
+    int result = ev_run(self->loop, flags);
+    if (PyErr_Occurred()) {
+        return NULL;
+    }
+    return PyBool_FromLong(result);
+}
+
+
+/* Loop.stop([how]) */
+PyDoc_STRVAR(Loop_stop_doc,
+"stop([how])");
+
+static PyObject *
+Loop_stop(Loop *self, PyObject *args)
+{
+    int how = EVBREAK_ONE;
+
+    if (!PyArg_ParseTuple(args, "|i:stop", &how)) {
+        return NULL;
+    }
+    ev_break(self->loop, how);
+    Py_RETURN_NONE;
+}
+
+
+/* Loop.invoke() */
+PyDoc_STRVAR(Loop_invoke_doc,
+"invoke()");
+
+static PyObject *
+Loop_invoke(Loop *self)
+{
+    ev_invoke_pending(self->loop);
+    Py_RETURN_NONE;
 }
 
 
@@ -245,16 +292,9 @@ Loop_resume(Loop *self)
 }
 
 
-/* Loop.ref()/Loop.unref() */
+/* Loop.unref()/Loop.ref() */
 PyDoc_STRVAR(Loop_ref_unref_doc,
-"ref()/unref()");
-
-static PyObject *
-Loop_ref(Loop *self)
-{
-    ev_ref(self->loop);
-    Py_RETURN_NONE;
-}
+"unref()/ref()");
 
 static PyObject *
 Loop_unref(Loop *self)
@@ -263,15 +303,10 @@ Loop_unref(Loop *self)
     Py_RETURN_NONE;
 }
 
-
-/* Loop.invoke() */
-PyDoc_STRVAR(Loop_invoke_doc,
-"invoke()");
-
 static PyObject *
-Loop_invoke(Loop *self)
+Loop_ref(Loop *self)
 {
-    ev_invoke_pending(self->loop);
+    ev_ref(self->loop);
     Py_RETURN_NONE;
 }
 
@@ -284,43 +319,6 @@ static PyObject *
 Loop_verify(Loop *self)
 {
     ev_verify(self->loop);
-    Py_RETURN_NONE;
-}
-
-
-/* Loop.start([flags]) -> bool */
-PyDoc_STRVAR(Loop_start_doc,
-"start([flags]) -> bool");
-
-static PyObject *
-Loop_start(Loop *self, PyObject *args)
-{
-    int flags = 0;
-
-    if (!PyArg_ParseTuple(args, "|i:start", &flags)) {
-        return NULL;
-    }
-    int result = ev_run(self->loop, flags);
-    if (PyErr_Occurred()) {
-        return NULL;
-    }
-    return PyBool_FromLong(result);
-}
-
-
-/* Loop.stop([how]) */
-PyDoc_STRVAR(Loop_stop_doc,
-"stop([how])");
-
-static PyObject *
-Loop_stop(Loop *self, PyObject *args)
-{
-    int how = EVBREAK_ONE;
-
-    if (!PyArg_ParseTuple(args, "|i:stop", &how)) {
-        return NULL;
-    }
-    ev_break(self->loop, how);
     Py_RETURN_NONE;
 }
 
@@ -564,6 +562,12 @@ Loop_async(Loop *self, PyObject *args)
 
 /* LoopType.tp_methods */
 static PyMethodDef Loop_tp_methods[] = {
+    {"start", (PyCFunction)Loop_start,
+     METH_VARARGS, Loop_start_doc},
+    {"stop", (PyCFunction)Loop_stop,
+     METH_VARARGS, Loop_stop_doc},
+    {"invoke", (PyCFunction)Loop_invoke,
+     METH_NOARGS, Loop_invoke_doc},
     {"reset", (PyCFunction)Loop_reset,
      METH_NOARGS, Loop_reset_doc},
     {"now", (PyCFunction)Loop_now,
@@ -574,18 +578,12 @@ static PyMethodDef Loop_tp_methods[] = {
      METH_NOARGS, Loop_suspend_resume_doc},
     {"resume", (PyCFunction)Loop_resume,
      METH_NOARGS, Loop_suspend_resume_doc},
-    {"ref", (PyCFunction)Loop_ref,
-     METH_NOARGS, Loop_ref_unref_doc},
     {"unref", (PyCFunction)Loop_unref,
      METH_NOARGS, Loop_ref_unref_doc},
-    {"invoke", (PyCFunction)Loop_invoke,
-     METH_NOARGS, Loop_invoke_doc},
+    {"ref", (PyCFunction)Loop_ref,
+     METH_NOARGS, Loop_ref_unref_doc},
     {"verify", (PyCFunction)Loop_verify,
      METH_NOARGS, Loop_verify_doc},
-    {"start", (PyCFunction)Loop_start,
-     METH_VARARGS, Loop_start_doc},
-    {"stop", (PyCFunction)Loop_stop,
-     METH_VARARGS, Loop_stop_doc},
     /* watcher methods */
     {"io", (PyCFunction)Loop_io,
      METH_VARARGS, Loop_io_doc},
@@ -640,46 +638,6 @@ static PyMemberDef Loop_tp_members[] = {
     {"data", T_OBJECT, offsetof(Loop, data), 0, NULL},
     {NULL}  /* Sentinel */
 };
-
-
-/* Loop.default */
-static PyObject *
-Loop_default_get(Loop *self, void *closure)
-{
-    return PyBool_FromLong(ev_is_default_loop(self->loop));
-}
-
-
-/* Loop.iteration */
-static PyObject *
-Loop_iteration_get(Loop *self, void *closure)
-{
-    return PyInt_FromUnsignedLong(ev_iteration(self->loop));
-}
-
-
-/* Loop.depth */
-static PyObject *
-Loop_depth_get(Loop *self, void *closure)
-{
-    return PyInt_FromUnsignedLong(ev_depth(self->loop));
-}
-
-
-/* Loop.backend */
-static PyObject *
-Loop_backend_get(Loop *self, void *closure)
-{
-    return PyInt_FromUnsignedLong(ev_backend(self->loop));
-}
-
-
-/* Loop.pending */
-static PyObject *
-Loop_pending_get(Loop *self, void *closure)
-{
-    return PyInt_FromUnsignedLong(ev_pending_count(self->loop));
-}
 
 
 /* Loop.callback */
@@ -747,18 +705,48 @@ Loop_debug_set(Loop *self, PyObject *value, void *closure)
 }
 
 
+/* Loop.default */
+static PyObject *
+Loop_default_get(Loop *self, void *closure)
+{
+    return PyBool_FromLong(ev_is_default_loop(self->loop));
+}
+
+
+/* Loop.backend */
+static PyObject *
+Loop_backend_get(Loop *self, void *closure)
+{
+    return PyInt_FromUnsignedLong(ev_backend(self->loop));
+}
+
+
+/* Loop.pending */
+static PyObject *
+Loop_pending_get(Loop *self, void *closure)
+{
+    return PyInt_FromUnsignedLong(ev_pending_count(self->loop));
+}
+
+
+/* Loop.iteration */
+static PyObject *
+Loop_iteration_get(Loop *self, void *closure)
+{
+    return PyInt_FromUnsignedLong(ev_iteration(self->loop));
+}
+
+
+/* Loop.depth */
+static PyObject *
+Loop_depth_get(Loop *self, void *closure)
+{
+    return PyInt_FromUnsignedLong(ev_depth(self->loop));
+}
+
+
 /* LoopType.tp_getsets */
 static PyGetSetDef Loop_tp_getsets[] = {
-    {"default", (getter)Loop_default_get,
-     Readonly_attribute_set, NULL, NULL},
-    {"iteration", (getter)Loop_iteration_get,
-     Readonly_attribute_set, NULL, NULL},
-    {"depth", (getter)Loop_depth_get,
-     Readonly_attribute_set, NULL, NULL},
-    {"backend", (getter)Loop_backend_get,
-     Readonly_attribute_set, NULL, NULL},
-    {"pending", (getter)Loop_pending_get,
-     Readonly_attribute_set, NULL, NULL},
     {"callback", (getter)Loop_callback_get,
      (setter)Loop_callback_set, NULL, NULL},
     {"io_interval", (getter)Loop_interval_get,
@@ -767,6 +755,16 @@ static PyGetSetDef Loop_tp_getsets[] = {
      (setter)Loop_interval_set, NULL, NULL},
     {"debug", (getter)Loop_debug_get,
      (setter)Loop_debug_set, NULL, NULL},
+    {"default", (getter)Loop_default_get,
+     Readonly_attribute_set, NULL, NULL},
+    {"backend", (getter)Loop_backend_get,
+     Readonly_attribute_set, NULL, NULL},
+    {"pending", (getter)Loop_pending_get,
+     Readonly_attribute_set, NULL, NULL},
+    {"iteration", (getter)Loop_iteration_get,
+     Readonly_attribute_set, NULL, NULL},
+    {"depth", (getter)Loop_depth_get,
+     Readonly_attribute_set, NULL, NULL},
     {NULL}  /* Sentinel */
 };
 

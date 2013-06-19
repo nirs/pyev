@@ -49,10 +49,8 @@ Embed_tp_clear(Embed *self)
 static void
 Embed_tp_dealloc(Embed *self)
 {
-    printf("Embed_tp_dealloc\n");
     Embed_tp_clear(self);
     WatcherType.tp_dealloc((PyObject *)self);
-    printf("Embed_tp_dealloc done\n");
 }
 
 

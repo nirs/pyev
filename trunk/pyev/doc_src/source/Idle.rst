@@ -24,7 +24,7 @@
 
     :py:class:`Idle` watchers trigger events when no other events of the same or
     higher priority are pending (:py:class:`Prepare`, :py:class:`Check` and
-    other :py:class:`Idle` watchers do not count as receiving 'events').
+    other :py:class:`Idle` watchers do not count as receiving "events").
 
     That is, as long as your process is busy handling sockets or timeouts (or
     even signals) of the same or higher priority it will not be triggered. But
@@ -44,3 +44,6 @@
     .. seealso::
         `ev_idle - when you've got nothing better to do...
         <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#code_ev_idle_code_when_you_ve_got_no>`_
+
+            * `Abusing an ev_idle watcher for its side-effect
+              <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Abusing_an_code_ev_idle_code_watcher>`_

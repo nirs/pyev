@@ -24,7 +24,7 @@
 
     :param int priority: See :py:attr:`Watcher.priority`.
 
-    :py:class:`Prepare` and :py:class:`Check` watchers are usually (but not
+    :py:class:`Prepare` and :py:class:`Check` watchers are often (but not
     always) used in pairs: :py:class:`Prepare` watchers get invoked before the
     process blocks and :py:class:`Check` watchers afterwards.
 
@@ -48,10 +48,15 @@
     :py:class:`Prepare` watchers).
 
     Also, :py:class:`Check` watchers (and :py:class:`Prepare` watchers, too)
-    should not activate/feed events into libev. While libev fully supports this,
-    they might get executed before other :py:class:`Check` watchers did their
-    job.
+    should not activate ("feed") events into libev. While libev fully supports
+    this, they might get executed before other :py:class:`Check` watchers did
+    their job (as :py:class:`Check` watchers are often used to embed other
+    (non-libev) event loops those other event loops might be in an unusable
+    state until their :py:class:`Check` watcher ran).
 
     .. seealso::
         `ev_prepare and ev_check - customise your event loop!
         <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#code_ev_prepare_code_and_code_ev_che>`_
+
+            * `Abusing an ev_check watcher for its side-effect
+              <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Abusing_an_code_ev_check_code_watche>`_

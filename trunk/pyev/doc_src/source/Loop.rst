@@ -16,8 +16,7 @@
 
     :type callback: callable or None
     :param callback: If omitted or :py:const:`None` the loop will fall back to
-        its default behaviour of calling :c:func:`ev_invoke_pending` when
-        required.
+        its default behaviour of calling :py:meth:`invoke` when required.
         If it is a :py:class:`callable`, then the loop will execute it instead
         and it becomes the user's responsibility to call :py:meth:`invoke`
         to invoke pending events. See also :py:attr:`callback`.
@@ -93,7 +92,7 @@
 
     .. py:method:: now() -> float
 
-        Returns the current 'event loop time', which is the time the event loop
+        Returns the current "event loop time", which is the time the event loop
         received events and started processing them. This timestamp does not
         change as long as callbacks are being processed, and this is also the
         base time used for relative timers. You can treat it as the timestamp of
@@ -168,60 +167,18 @@
 
     .. py:method:: verify
 
-        This method only does something with a debug build of pyev (which needs
-        a debug build of Python). It tries to go through all internal structures
-        and checks them for validity. If anything is found to be inconsistent,
-        it will print an error message to standard error and call :c:func:`abort`.
+        This method only does something when :c:data:`EV_VERIFY` support has
+        been compiled in libev (which is the default for non-minimal builds).
+        It tries to go through all internal structures and checks them for
+        validity. If anything is found to be inconsistent, it will print an
+        error message to standard error and call :c:func:`abort`.
         This can be used to catch bugs inside libev itself: under normal
         circumstances, this method should never abort.
 
 
-    .. py:attribute:: backend
+    .. py:attribute:: data
 
-        *Read only*
-
-        One of the :ref:`Loop_backends` flags indicating the event backend in
-        use.
-
-
-    .. py:attribute:: default
-
-        *Read only*
-
-        :py:const:`True` if the loop is the *default loop*, :py:const:`False`
-        otherwise.
-
-
-    .. py:attribute:: depth
-
-        *Read only*
-
-        The number of times :py:meth:`start` was entered minus the number of
-        times :py:meth:`start` was exited normally, in other words, the
-        recursion depth. Outside :py:meth:`start`, this number is ``0``. In a
-        callback, this number is ``1``, unless :py:meth:`start` was invoked
-        recursively (or from another thread), in which case it is higher.
-
-
-    .. py:attribute:: iteration
-
-        *Read only*
-
-        The current iteration count for the loop, which is identical to the
-        number of times libev did poll for new events. It starts at ``0`` and
-        happily wraps around with enough iterations. This value can sometimes be
-        useful as a generation counter of sorts (it 'ticks' the number of loop
-        iterations), as it roughly corresponds with :py:class:`Prepare` and
-        :py:class:`Check` calls - and is incremented between the prepare and
-        check phases.
-
-
-    .. py:attribute:: pending
-
-        *Read only*
-
-        The number of pending watchers - ``0`` indicates that no watchers are
-        pending.
+        loop data.
 
 
     .. py:attribute:: callback
@@ -244,11 +201,6 @@
 
         .. warning::
             If the callback raises an error, pyev will **stop the loop**.
-
-
-    .. py:attribute:: data
-
-        loop data.
 
 
     .. py:attribute:: io_interval
@@ -276,7 +228,8 @@
         Setting this to a non-zero value will introduce an additional
         :py:func:`sleep` call into most loop iterations. The sleep time ensures
         that libev will not poll for :py:class:`Io` events events more often
-        than once per this interval, on average.
+        than once per this interval, on average (as long as the host time
+        resolution is good enough).
         Many (busy) programs can usually benefit by setting the *io_interval* to
         a value near ``0.1`` or so, which is often enough for interactive
         servers (of course not for games), likewise for timeouts. It usually
@@ -293,8 +246,8 @@
         :py:class:`Io` watchers will not be affected.
         Setting this to a non-zero value will not introduce any overhead in libev.
         Setting the *timeout_interval* can improve the opportunity for saving
-        power, as the program will 'bundle' timer callback invocations that are
-        'near' in time together, by delaying some, thus reducing the number of
+        power, as the program will "bundle" timer callback invocations that are
+        "near" in time together, by delaying some, thus reducing the number of
         times the process sleeps and wakes up again. Another useful technique to
         reduce iterations/wake-ups is to use :py:class:`Periodic` watchers and
         make sure they fire on, say, one-second boundaries only.
@@ -312,6 +265,54 @@
 
         If :py:const:`True`, the loop will **stop on all errors** (you do not
         want that if you write a server).
+
+
+    .. py:attribute:: default
+
+        *Read only*
+
+        :py:const:`True` if the loop is the *default loop*, :py:const:`False`
+        otherwise.
+
+
+    .. py:attribute:: backend
+
+        *Read only*
+
+        One of the :ref:`Loop_backends` flags indicating the event backend in
+        use.
+
+
+    .. py:attribute:: pending
+
+        *Read only*
+
+        The number of pending watchers - ``0`` indicates that no watchers are
+        pending.
+
+
+    .. py:attribute:: iteration
+
+        *Read only*
+
+        The current iteration count for the loop, which is identical to the
+        number of times libev did poll for new events. It starts at ``0`` and
+        happily wraps around with enough iterations. This value can sometimes be
+        useful as a generation counter of sorts (it "ticks" the number of loop
+        iterations), as it roughly corresponds with :py:class:`Prepare` and
+        :py:class:`Check` calls - and is incremented between the prepare and
+        check phases.
+
+
+    .. py:attribute:: depth
+
+        *Read only*
+
+        The number of times :py:meth:`start` was entered minus the number of
+        times :py:meth:`start` was exited normally, in other words, the
+        recursion depth. Outside :py:meth:`start`, this number is ``0``. In a
+        callback, this number is ``1``, unless :py:meth:`start` was invoked
+        recursively (or from another thread), in which case it is higher.
 
 
 .. _Loop_flags:

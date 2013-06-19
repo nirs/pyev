@@ -11,14 +11,8 @@
 
 .. py:class:: Io(fd, events, loop, callback[, data=None, priority=0])
 
-    .. note::
-        * On POSIX platforms, *fd* can be an :py:class:`int` or any Python
-          object having a :py:meth:`fileno` method (this include
-          :py:class:`socket` and :py:class:`file` objects).
-        * On Windows, *fd* will **only** accept :py:class:`socket` objects
-          from the :py:mod:`_socket` module (note the underscore).
-
-    :param fd: the file descriptor to be monitored.
+    :param fd: the file descriptor to be monitored, can be an :py:class:`int` or
+        any Python object having a :py:meth:`fileno` method.
 
     :param int events: either :py:const:`EV_READ`, :py:const:`EV_WRITE` or
         :py:const:`EV_READ` | :py:const:`EV_WRITE`.
@@ -47,7 +41,7 @@
     usually a good idea (but not required).
 
     Another thing you have to watch out for is that it is quite easy to receive
-    'spurious' readiness notifications, that is, your callback might be called
+    "spurious" readiness notifications, that is, your callback might be called
     with :py:const:`EV_READ` but a subsequent :c:func:`read` will actually block
     because there is no data. It is very easy to get into this situation even
     with a relatively standard program structure. Thus it is best to always use
@@ -81,14 +75,8 @@
 
     .. py:method:: set(fd, events)
 
-        .. note::
-            * On POSIX platforms, *fd* can be an :py:class:`int` or any Python
-              object having a :py:meth:`fileno` method (this include
-              :py:class:`socket` and :py:class:`file` objects).
-            * On Windows, *fd* will **only** accept :py:class:`socket` objects
-              from the :py:mod:`_socket` module (note the underscore).
-
-        :param fd: the file descriptor to be monitored.
+        :param fd: the file descriptor to be monitored, can be an :py:class:`int`
+            or any Python object having a :py:meth:`fileno` method.
 
         :param int events: either :py:const:`EV_READ`, :py:const:`EV_WRITE` or
             :py:const:`EV_READ` | :py:const:`EV_WRITE`.

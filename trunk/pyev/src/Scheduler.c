@@ -109,7 +109,6 @@ Scheduler_tp_clear(Scheduler *self)
 static void
 Scheduler_tp_dealloc(Scheduler *self)
 {
-    printf("Scheduler_tp_dealloc\n");
     Scheduler_tp_clear(self);
     if (self->prepare) {
         if (((Watcher *)self)->loop) {
@@ -119,7 +118,6 @@ Scheduler_tp_dealloc(Scheduler *self)
         self->prepare = NULL;
     }
     PeriodicBaseType.tp_dealloc((PyObject *)self);
-    printf("Scheduler_tp_dealloc done\n");
 }
 
 

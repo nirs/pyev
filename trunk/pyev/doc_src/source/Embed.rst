@@ -52,8 +52,8 @@
 
     Fork detection will be handled transparently while the :py:class:`Embed`
     watcher is active, i.e., the embedded loop will automatically be forked when
-    the embedding loop forks. When the watcher is not running, however, it is
-    still the task of the libev user to call :py:meth:`Loop.fork` as applicable.
+    the embedding loop forks. In other cases, the user is responsible for
+    calling :py:meth:`Loop.fork` on the embedded loop.
 
     Unfortunately, not all backends are embeddable: only the ones returned by
     :py:func:`embeddable_backends` are, which, unfortunately, does not include
@@ -62,6 +62,9 @@
     .. seealso::
         `ev_embed - when one backend isn't enough...
         <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#code_ev_embed_code_when_one_backend_>`_
+
+            * `ev_embed and fork
+              <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#code_ev_embed_code_and_fork>`_
 
 
     .. py:method:: set(other)
@@ -83,13 +86,6 @@
         but in the most appropriate way for embedded loops.
 
 
-    .. py:attribute:: other
-
-        *Read only*
-
-        The embedded event loop.
-
-
     .. py:attribute:: callback
 
         As long as the watcher is active, the callback will be invoked every
@@ -104,3 +100,10 @@
         sweep whenever necessary.
 
         See also :py:attr:`Watcher.callback`.
+
+
+    .. py:attribute:: other
+
+        *Read only*
+
+        The embedded event loop.
