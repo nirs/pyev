@@ -36,9 +36,9 @@
     signals, too, are asynchronous in nature, and signals, too, will be
     compressed (i.e. the number of callback invocations may be less than the
     number of :py:meth:`send` calls). In fact, you could use signal watchers as
-    a kind of 'global async watchers' by using a watcher on an otherwise unused
-    signal, and signal this watcher from another thread, even without knowing
-    which loop owns the signal.
+    a kind of "global async watchers" by using a watcher on an otherwise unused
+    signal, and :py:func:`feed_signal` to signal this watcher from another
+    thread, even without knowing which loop owns the signal.
 
     .. seealso::
         `ev_async - how to wake up an event loop
@@ -52,16 +52,19 @@
 
         Sends/signals/activates the :py:class:`Async` watcher, that is, feeds an
         :py:const:`EV_ASYNC` event on the watcher into the event loop, and
-        returns immediately.
+        instantly returns.
 
         Note that, as with other watchers in libev, multiple events might get
         compressed into a single callback invocation (another way to look at
-        this is that :py:class:`Async` watchers are level-triggered, set on
-        :py:meth:`send`, reset when the event loop detects that).
+        this is that :py:class:`Async` watchers are level-triggered: they are
+        set on :py:meth:`send`, reset when the event loop detects that).
 
-        This call incurs the overhead of a system call only once per event loop
-        iteration, so while the overhead might be noticeable, it doesn't apply
-        to repeated calls to :py:meth:`send` for the same event loop.
+        This call incurs the overhead of at most one extra system call per event
+        loop iteration, if the event loop is blocked, and no syscall at all if
+        the event loop (or your program) is processing events. That means that
+        repeated calls are basically free (there is no need to avoid calls for
+        performance reasons) and that the overhead becomes smaller (typically
+        zero) under load.
 
 
     .. py:attribute:: sent
@@ -74,4 +77,6 @@
 
         .. note::
             This does not check whether the watcher itself is pending, only
-            whether it has been requested to make this watcher pending.
+            whether it has been requested to make this watcher pending: there is
+            a time window between the event loop checking and resetting the
+            async notification, and the callback being invoked.

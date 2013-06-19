@@ -48,14 +48,6 @@ static PyMethodDef Child_tp_methods[] = {
 };
 
 
-/* Child.pid */
-static PyObject *
-Child_pid_get(Watcher *self, void *closure)
-{
-    return PyInt_FromLong(((ev_child *)self->watcher)->pid);
-}
-
-
 /* Child.rpid */
 static PyObject *
 Child_rpid_get(Watcher *self, void *closure)
@@ -92,14 +84,22 @@ Child_rstatus_set(Watcher *self, PyObject *value, void *closure)
 }
 
 
+/* Child.pid */
+static PyObject *
+Child_pid_get(Watcher *self, void *closure)
+{
+    return PyInt_FromLong(((ev_child *)self->watcher)->pid);
+}
+
+
 /* ChildType.tp_getsets */
 static PyGetSetDef Child_tp_getsets[] = {
-    {"pid", (getter)Child_pid_get,
-     Readonly_attribute_set, NULL, NULL},
     {"rpid", (getter)Child_rpid_get,
      (setter)Child_rpid_set, NULL, NULL},
     {"rstatus", (getter)Child_rstatus_get,
      (setter)Child_rstatus_set, NULL, NULL},
+    {"pid", (getter)Child_pid_get,
+     Readonly_attribute_set, NULL, NULL},
     {NULL}  /* Sentinel */
 };
 

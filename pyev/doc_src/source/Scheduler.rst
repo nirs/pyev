@@ -53,12 +53,6 @@
         have changed).
 
 
-    .. py:method:: at() -> float
-
-        When the watcher is active, returns the absolute time that this watcher
-        is supposed to trigger next.
-
-
     .. py:attribute:: scheduler
 
         The current reschedule callback. Can be changed any time.
@@ -73,7 +67,7 @@
 
             :param float now: the current time.
 
-        It must return a :py:class:`float` greater than or equal to the *now*
+        It **must** return a :py:class:`float` greater than or equal to the *now*
         argument to indicate the next time the watcher callback should be
         scheduled. It will usually be called just before the callback will be
         triggered, but might be called at other times, too.
@@ -86,3 +80,11 @@
               event loop modification you are allowed to do).
             * If the reshedule callback raises an error, or returns anything but
               a :py:class:`float`, pyev will stop this watcher.
+
+
+    .. py:attribute:: at
+
+        *Read only*
+
+        When the watcher is active, this is the absolute time that this watcher
+        is supposed to trigger next.

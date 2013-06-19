@@ -11,22 +11,37 @@ Release 0.9.0
 
 misc:
 
-- .. warning::
-    pyev does not embed libev anymore (Issue #9):
+.. warning::
+    - pyev does not embed libev anymore (Issue #9):
 
-    - libev >= 4.15 is required.
-    - win32 support has been dropped.
-    - No more :py:class:`Stat` watchers.
-    - pyev is now published under the GPLv3 license.
+      - libev >= 4.15 is required.
+      - win32 support has been dropped.
+      - No more :py:class:`Stat` watchers.
+      - pyev is now published under the GPLv3 license.
 
-- Support for Python2 < 2.7 and Python3 < 3.3 has been dropped.
+    - Support for Python2 < 2.7 and Python3 < 3.3 has been dropped.
 
 
 :py:mod:`pyev`:
 
 - Method version() is replaced by attribute __version__.
 - Removed :py:class:`Stat` watcher type.
-- Removed :py:const:`EVFLAG_NOINOTIFY` and :py:const:`EV_STAT` constants .
+- Removed :py:const:`EVFLAG_NOINOTIFY` and :py:const:`EV_STAT` constants.
+
+
+:py:class:`Timer`:
+
+- Method remaining() is replaced by attribute remaining.
+
+
+:py:class:`Periodic`:
+
+- Method at() is replaced by attribute at.
+
+
+:py:class:`Scheduler`:
+
+- Method at() is replaced by attribute at.
 
 
 

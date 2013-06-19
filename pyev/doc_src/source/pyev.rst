@@ -14,7 +14,7 @@
     <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod>`_.
 
 
-.. py:function:: default_loop([flags=EVFLAG_AUTO, callback=None, data=None, io_interval=0.0, timeout_interval=0.0, debug=False]) -> the 'default loop'
+.. py:function:: default_loop([flags=EVFLAG_AUTO, callback=None, data=None, io_interval=0.0, timeout_interval=0.0, debug=False]) -> the "default loop"
 
     This will instanciate the *default loop* if it hasn't been created yet
     and return it. If the *default loop* was already initialized this simply

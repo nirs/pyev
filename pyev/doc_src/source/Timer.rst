@@ -34,7 +34,7 @@
 
     The timers are based on real time, that is, if you register an event that
     times out after an hour and you reset your system clock to January last
-    year, it will still time out after (roughly) one hour. 'Roughly' because
+    year, it will still time out after (roughly) one hour. "Roughly" because
     detecting time jumps is hard, and some inaccuracies are unavoidable.
 
     The callback is guaranteed to be invoked only after its timeout has passed
@@ -56,8 +56,12 @@
 
             * `Be smart about timeouts
               <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#Be_smart_about_timeouts>`_
+            * `The special problem of being too early
+              <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#The_special_problem_of_being_too_ear>`_
             * `The special problem of time updates
               <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#The_special_problem_of_time_updates>`_
+            * `The special problems of unsynchronised clocks
+              <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#The_special_problem_of_unsynchronise>`_
             * `The special problems of suspended animation
               <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#The_special_problems_of_suspended_an>`_
 
@@ -77,13 +81,15 @@
     .. py:method:: reset
 
         This will act as if the timer timed out and restart it again if it is
-        repeating. The exact semantics are:
+        repeating. It basically works like calling :py:meth:`stop`, updating the
+        timeout to the :py:attr:`repeat` value and calling :py:meth:`start`.
+        The exact semantics are:
 
-        * if the timer is pending, its pending status is cleared.
-        * if the timer is started but non-repeating, stop it (as if it timed out).
-        * if the timer is repeating, either start it if necessary (with the
-          :py:attr:`repeat` value), or reset the running timer to the
-          :py:attr:`repeat` value.
+        * if the timer is pending, the pending status is always cleared.
+        * if the timer is started but non-repeating, stop it (as if it timed out,
+          without invoking it).
+        * if the timer is repeating, make the :py:attr:`repeat` value the new
+          timeout and start the timer, if necessary.
 
         .. seealso::
             `Be smart about timeouts
@@ -91,22 +97,24 @@
             for a usage example.
 
 
-    .. py:method:: remaining() -> float
-
-        Returns the remaining time until a timer fires. If the timer is active,
-        then this time is relative to the current event loop time, otherwise
-        it's the timeout value currently configured.
-
-        That is, after instanciating a :py:class:`Timer` with an *after* value
-        of ``5.0`` and a *repeat* value of ``7.0``, :py:meth:`remaining` returns
-        ``5.0``. When the timer is started and one second passes,
-        :py:meth:`remaining` will return ``4.0``. When the timer expires and is
-        restarted, it will return roughly ``7.0`` (likely slightly less as
-        callback invocation takes some time, too), and so on.
-
-
     .. py:attribute:: repeat
 
         The current *repeat* value. Will be used each time the watcher times out
         or :py:meth:`reset` is called, and determines the next timeout (if any),
         which is also when any modifications are taken into account.
+
+
+    .. py:attribute:: remaining
+
+        *Read only*
+
+        The remaining time until a timer fires. If the timer is active,
+        then this time is relative to the current event loop time, otherwise
+        it's the timeout value currently configured.
+
+        That is, after instanciating a :py:class:`Timer` with an *after* value
+        of ``5.0`` and a *repeat* value of ``7.0``, :py:attr:`remaining` is
+        ``5.0``. When the timer is started and one second passes,
+        :py:attr:`remaining` will be ``4.0``. When the timer expires and is
+        restarted, it will be roughly ``7.0`` (likely slightly less as
+        callback invocation takes some time, too), and so on.

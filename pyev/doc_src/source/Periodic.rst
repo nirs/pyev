@@ -69,14 +69,6 @@
         useful when you changed some attributes.
 
 
-    .. py:method:: at() -> float
-
-        When the watcher is active, returns the absolute time that this watcher
-        is supposed to trigger next. This is not the same as the offset argument
-        to :py:meth:`set` or :py:meth:`__init__`, but indeed works even in
-        interval mode.
-
-
     .. py:attribute:: offset
 
         When repeating, this contains the offset value, otherwise this is the
@@ -95,6 +87,16 @@
         called.
 
 
+    .. py:attribute:: at
+
+        *Read only*
+
+        When the watcher is active, this is the absolute time that this watcher
+        is supposed to trigger next. This is not the same as the offset argument
+        to :py:meth:`set` or :py:meth:`__init__`, but indeed works even in
+        interval mode.
+
+
 .. _Periodic_modes:
 
 :py:class:`Periodic` modes of operation
@@ -104,17 +106,18 @@
 Absolute timer
 --------------
 
-This is triggered by setting *interval* to ``0.0`` and *offset* to a float.
+This is triggered by setting *interval* to ``0.0`` and *offset* to a float
+representing an absolute time.
 
 In this configuration the watcher triggers an event after the wall clock
 time *offset* has passed. It will not repeat and will not adjust when a time
-jump occurs, that is, if it is to be run at January 1st 2012 then it will be
+jump occurs, that is, if it is to be run at January 1st 2014 then it will be
 stopped and invoked when the system clock reaches or surpasses this point in
 time.
 
-Example, trigger an event on January 1st 2012 00:00:00 UTC::
+Example, trigger an event on January 1st 2014 00:00:00 UTC::
 
-    Periodic(1325376000.0, 0.0, ...)
+    Periodic(1388534400.0, 0.0, ...)
 
 
 Repeating interval timer
@@ -133,11 +136,11 @@ but only that the callback will be called when the system time shows a full
 hour (UTC), or more correctly, when the system time is evenly divisible by
 ``3600``.
 
-In this mode, typical values for *offset* are ``0.0`` or something between
-``0.0`` and *interval*.
+In this mode *interval* **must** be positive, and for numerical stability,
+should be higher than ``1/8192`` (which is around 120 microseconds). The *offset*
+argument is merely an offset into the *interval* periods and **must** be ``0.0``
+or something between ``0.0`` and *interval*.
 
-For numerical stability, *interval* should be higher than ``1/8192`` (which
-is around 120 microseconds).
 Note also that there is an upper limit to how often a timer can fire (CPU
 speed for example), so if *interval* is very small then timing stability
 will of course deteriorate.

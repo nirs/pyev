@@ -32,10 +32,10 @@
     :py:class:`Child` watchers trigger when your process receives a
     :c:data:`SIGCHLD` in response to some child status changes (most typically
     when a child of yours dies or exits). It is permissible to install a
-    :py:class:`Child` watcher after the child has been forked (which implies it
-    might have already exited), as long as the event loop isn't entered (or is
-    continued from a watcher), i.e. forking and then immediately registering a
-    watcher for the child is fine, but forking and registering a watcher a few
+    :py:class:`Child` watcher *after* the child has been forked (which implies
+    it might have already exited), as long as the event loop isn't entered (or
+    is continued from a watcher), i.e. forking and then immediately registering
+    a watcher for the child is fine, but forking and registering a watcher a few
     event loop iterations later or in the next callback invocation is not.
 
     You can only register :py:class:`Child` watchers in the *default loop*.
@@ -68,14 +68,6 @@
         Configures the watcher.
 
 
-    .. py:attribute:: pid
-
-        *Read only*
-
-        The process id this watcher watches out for, or ``0``, meaning any
-        process id.
-
-
     .. py:attribute:: rpid
 
         The process id that detected a status change.
@@ -84,3 +76,11 @@
     .. py:attribute:: rstatus
 
         The process exit status caused by :py:attr:`rpid`.
+
+
+    .. py:attribute:: pid
+
+        *Read only*
+
+        The process id this watcher watches out for, or ``0``, meaning any
+        process id.

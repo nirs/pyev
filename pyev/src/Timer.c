@@ -63,15 +63,6 @@ static PyMethodDef Timer_tp_methods[] = {
 };
 
 
-/* Timer.remaining */
-static PyObject *
-Timer_remaining_get(Watcher *self, void *closure)
-{
-    return PyFloat_FromDouble(
-        ev_timer_remaining(self->loop->loop, (ev_timer *)self->watcher));
-}
-
-
 /* Timer.repeat */
 static PyObject *
 Timer_repeat_get(Watcher *self, void *closure)
@@ -93,12 +84,21 @@ Timer_repeat_set(Watcher *self, PyObject *value, void *closure)
 }
 
 
+/* Timer.remaining */
+static PyObject *
+Timer_remaining_get(Watcher *self, void *closure)
+{
+    return PyFloat_FromDouble(
+        ev_timer_remaining(self->loop->loop, (ev_timer *)self->watcher));
+}
+
+
 /* TimerType.tp_getsets */
 static PyGetSetDef Timer_tp_getsets[] = {
-    {"remaining", (getter)Timer_remaining_get,
-     Readonly_attribute_set, NULL, NULL},
     {"repeat", (getter)Timer_repeat_get,
      (setter)Timer_repeat_set, NULL, NULL},
+    {"remaining", (getter)Timer_remaining_get,
+     Readonly_attribute_set, NULL, NULL},
     {NULL}  /* Sentinel */
 };
 

@@ -18,7 +18,7 @@ class Connection(object):
         self.address = address
         self.sock.setblocking(0)
         self.buf = ""
-        self.watcher = pyev.Io(self.sock._sock, pyev.EV_READ, loop, self.io_cb)
+        self.watcher = pyev.Io(self.sock, pyev.EV_READ, loop, self.io_cb)
         self.watcher.start()
         logging.debug("{0}: ready".format(self))
 
@@ -79,7 +79,7 @@ class Server(object):
         self.loop = pyev.default_loop()
         self.watchers = [pyev.Signal(sig, self.loop, self.signal_cb)
                          for sig in STOPSIGNALS]
-        self.watchers.append(pyev.Io(self.sock._sock, pyev.EV_READ, self.loop,
+        self.watchers.append(pyev.Io(self.sock, pyev.EV_READ, self.loop,
                                      self.io_cb))
         self.conns = weakref.WeakValueDictionary()
 

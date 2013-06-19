@@ -70,7 +70,7 @@ to users, its methods and attributes are described here.
         returns its *revents* bitset (as if its callback was invoked). If the
         watcher isn't pending it does nothing and returns ``0``.
 
-        Sometimes it can be useful to 'poll' a watcher instead of waiting for
+        Sometimes it can be useful to "poll" a watcher instead of waiting for
         its callback to be invoked, which can be accomplished with this function.
 
 
@@ -83,33 +83,9 @@ to users, its methods and attributes are described here.
         event had happened for the watcher.
 
 
-    .. py:attribute:: active
+    .. py:attribute:: data
 
-        *Read only*
-
-        :py:const:`True` if the watcher is active (i.e. it has been started and
-        not yet been stopped), :py:const:`False` otherwise.
-
-        As long as a watcher is active you must not modify it.
-
-
-    .. py:attribute:: pending
-
-        *Read only*
-
-        :py:const:`True` if the watcher is pending, (i.e. it has outstanding
-        events but its callback has not yet been invoked), :py:const:`False`
-        otherwise.
-
-        As long as a watcher is pending (but not active) you must not change its
-        priority.
-
-
-    .. py:attribute:: loop
-
-        *Read only*
-
-        :py:class:`Loop` object responsible for the watcher.
+        watcher data.
 
 
     .. py:attribute:: callback
@@ -125,7 +101,7 @@ to users, its methods and attributes are described here.
             :param int revents: See :ref:`Watcher_revents` for valid values.
 
         As a rule you should not let the callback return with unhandled
-        exceptions. The loop 'does not know' what to do with an exception
+        exceptions. The loop "does not know" what to do with an exception
         happening in your callback (it depends largely on what **you** are
         doing), so, by default, it will just print a warning and suppress it.
         This behaviour can be changed by setting :py:attr:`Loop.debug` to
@@ -162,11 +138,6 @@ to users, its methods and attributes are described here.
                 pass #do something interesting
 
 
-    .. py:attribute:: data
-
-        watcher data.
-
-
     .. py:attribute:: priority
 
         Set and query the priority of the watcher. The priority is a small
@@ -192,6 +163,35 @@ to users, its methods and attributes are described here.
         .. seealso::
             `WATCHER PRIORITY MODELS
             <http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#WATCHER_PRIORITY_MODELS>`_
+
+
+    .. py:attribute:: loop
+
+        *Read only*
+
+        :py:class:`Loop` object responsible for the watcher.
+
+
+    .. py:attribute:: active
+
+        *Read only*
+
+        :py:const:`True` if the watcher is active (i.e. it has been started and
+        not yet been stopped), :py:const:`False` otherwise.
+
+        As long as a watcher is active you must not modify it.
+
+
+    .. py:attribute:: pending
+
+        *Read only*
+
+        :py:const:`True` if the watcher is pending, (i.e. it has outstanding
+        events but its callback has not yet been invoked), :py:const:`False`
+        otherwise.
+
+        As long as a watcher is pending (but not active) you must not change its
+        priority.
 
 
 .. _Watcher_revents:
@@ -236,14 +236,17 @@ Watcher received events
 
 .. py:data:: EV_CHECK
 
-    All :py:class:`Prepare` watchers are invoked just before
-    :py:meth:`Loop.start` starts to gather new events, and all :py:class:`Check`
-    watchers are invoked just after :py:meth:`Loop.start` has gathered them, but
-    before it invokes any callbacks for any received events. Callbacks of both
-    watcher types can start and stop as many watchers as they want, and all of
-    them will be taken into account (for example, a :py:class:`Prepare` watcher
-    might start an :py:class:`Idle` watcher to keep :py:meth:`Loop.start` from
-    blocking).
+    All :py:class:`Prepare` watchers are invoked just before :py:meth:`Loop.start`
+    starts to gather new events, and all :py:class:`Check` watchers are queued
+    (not invoked) just after :py:meth:`Loop.start` has gathered them, but before
+    it queues any callbacks for any received events. That means :py:class:`Prepare`
+    watchers are the last watchers invoked before the event loop sleeps or polls
+    for new events, and :py:class:`Check` watchers will be invoked before any
+    other watchers of the same or lower priority within an event loop iteration.
+    Callbacks of both watcher types can start and stop as many watchers as they
+    want, and all of them will be taken into account (for example, a
+    :py:class:`Prepare` watcher might start an :py:class:`Idle` watcher to keep
+    :py:meth:`Loop.start` from blocking).
 
 .. py:data:: EV_EMBED
 
